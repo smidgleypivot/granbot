@@ -70,6 +70,7 @@ def main():
 
             assistant_reply_box = st.empty()
             assistant_reply = ""
+            scroll_placeholder = st.empty()
 
             for event in run:
             # There are various types of streaming events
@@ -84,6 +85,8 @@ def main():
                         assistant_reply += event.data.delta.content[0].text.value
                         # display the new text
                         assistant_reply_box.markdown(assistant_reply)
+                        scroll_placeholder.text("")
+                        
         
             # Once the stream is over, update chat history
             st.session_state.messages.append({"role": "assistant",
