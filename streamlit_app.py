@@ -30,6 +30,9 @@ df = pd.DataFrame({
     "rand": np.random.randn(num_points),
 })
 
+
+st.caption("A simple streamlit app that generates a spiral -updated to check deployment mechanism")
+
 st.altair_chart(alt.Chart(df, height=700, width=700)
     .mark_point(filled=True)
     .encode(
