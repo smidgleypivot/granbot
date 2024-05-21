@@ -1,18 +1,33 @@
-import altair as alt
-import numpy as np
-import pandas as pd
+from openai import OpenAI
 import streamlit as st
 
-"""
-# A simple Chtbot App
-"""
+st.title("Granbot Chatbot")
 
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
+if "openai_model" not in st.session_state:
+    st.session_state["openai_model"] = "gpt-3.5-turbo"
 
-st.caption("A simple streamlit app that generates a spiral -updated to check deployment mechanism")
+if "messages" not in st.session_state:
+    st.session_state.messages = []
 
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
 
-st.header("Chatbot")
-user_input = st.text_input("Say something")
-if st.button("Send"):
-    st.write(f"Bot: You said '{user_input}'")
+if prompt := st.chat_input("What is up?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        stream = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=[
+                {"role": m["role"], "content": m["content"]}
+                for m in st.session_state.messages
+            ],
+            stream=True,
+        )
+        response = st.write_stream(stream)
+    st.session_state.messages.append({"role": "assistant", "content": response})
